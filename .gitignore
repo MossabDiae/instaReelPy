@@ -1,3 +1,5 @@
+# Manually added by Moss
+playground/*.mp4
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
