@@ -3,7 +3,7 @@ from moviepy.editor import *
 
 vidfile = VideoFileClip("vid.mp4")
 
-myvid = vidfile.subclip((11,59),(12,9))
+myvid = vidfile.subclip("11:59","12:09")
 myvid = myvid.set_position(("center","top"))
 myvid = myvid.resize(width=1080)
 
@@ -25,7 +25,9 @@ myclip = CompositeVideoClip([myimg, myvid])
 # myclip.resize(0.3).preview()
 # ------------
 # Quick fast previews (no audio)
-# myclip.resize(0.3).preview(fps=10, audio=False)
+myclip.resize(0.3).preview(fps=10, audio=False)
 
 # export
 # myclip.write_videofile("movie.mp4")
+
+print(type(myclip))
