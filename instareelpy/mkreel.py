@@ -1,4 +1,7 @@
 import moviepy.editor as mpy
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
+from typing import List
 import argparse
 
 
@@ -31,6 +34,12 @@ def init_argparse():
 
 # Generate a video-cuts from sub-clips array
 # merge_subclips(video, [(t1, t2), (), ...]) -> vcuts made from sclips array + animation
+def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
+  """Create cuts form the video and concatenate them
+  """
+  vcuts = [video.subclip(*cut) for cut in cuts]
+  merged_v = mpy.concatenate(vcuts)
+  return merged_v
 
 # Put things together
 # 1- Calculate sizes + set positions based on container vars
