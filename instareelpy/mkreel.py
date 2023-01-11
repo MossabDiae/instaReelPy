@@ -11,18 +11,36 @@ DEBUG = True
 
 # video, times
 # image
+def init_argparse():
+  parser = argparse.ArgumentParser(
+    prog="mkreel.py",
+    description="Generate Instagram reels using an image and cuts from a video",   
+  )
+
+  parser.add_argument('video', metavar="VIDEO",
+                      help="path to video file to make cuts from")
+  parser.add_argument('--img', metavar="IMAGE", nargs=1,
+                      help="path to image file",
+                      required=True,)
+  parser.add_argument('--vcut', action="append",
+                      nargs=2, metavar="t", required=True,
+                      help="start and end times for the video cut (can be multiple)")
+  
+  return parser
 
 
-# Generate a video-clip from sub-clips array
-# merge_subclips(video, [(t1, t2), (), ...]) -> vclip made from sclips array + animation
+# Generate a video-cuts from sub-clips array
+# merge_subclips(video, [(t1, t2), (), ...]) -> vcuts made from sclips array + animation
 
 # Put things together
 # 1- Calculate sizes + set positions based on container vars
 
-# 2- Set image + container duration based on vclip 
+# 2- Set image + container duration based on vcuts 
 
 # 3- Put things together
 
 # Debug
-
+parser = init_argparse()
+args = parser.parse_args()
+print(args)
 # Export
