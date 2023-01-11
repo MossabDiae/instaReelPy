@@ -1,5 +1,6 @@
 import moviepy.editor as mpy
 from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.video.VideoClip import ImageClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from typing import List
 import argparse
@@ -42,6 +43,14 @@ def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
   return merged_v
 
 # Put things together
+def merge_vimg(image: ImageClip, video: CompositeVideoClip, cta=False, vscale=1) -> CompositeVideoClip:
+  """Merge the video with image 
+  Image: takes the duration from the videos (video/ cta)
+  Video: set height x width based on the frame dimensions (image/ length)
+
+  TODO: implement cta, vscale, custom frame dimension
+  """
+  pass
 # 1- Calculate sizes + set positions based on container vars
 
 # 2- Set image + container duration based on vcuts 
