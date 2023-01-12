@@ -1,6 +1,6 @@
 import moviepy.editor as mpy
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from moviepy.video.VideoClip import ImageClip
+from moviepy.video.VideoClip import ImageClip, ColorClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from typing import List
 import argparse
@@ -50,12 +50,24 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip, cta=False, vscale=1)
 
   TODO: implement cta, vscale, custom frame dimension
   """
-  pass
-# 1- Calculate sizes + set positions based on container vars
+  # set vars
+  container_size = image.w
+  full_duration = video.duration
 
-# 2- Set image + container duration based on vcuts 
+  # set container
+  container = ColorClip(size=(container_size, container_size), 
+                        color=(255,255,255)).set_duration(full_duration)
+  
+  v_height = container_size - image.h
+  video = video.resize(height=v_height)
+  video = video.set_position(("center","top"))
 
-# 3- Put things together
+  # set image
+  image = image.set_duration(full_duration)
+  image = image.set_position(("center", "bottom"))
+  
+
+  return CompositeVideoClip([container, image, video])
 
 # Debug
 parser = init_argparse()
