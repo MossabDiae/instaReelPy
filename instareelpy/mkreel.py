@@ -43,12 +43,13 @@ def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
   return merged_v
 
 # Put things together
-def merge_vimg(image: ImageClip, video: CompositeVideoClip, cta=False, vscale=1) -> CompositeVideoClip:
+def merge_vimg(image: ImageClip, video: CompositeVideoClip, auto_crop: bool, cta=False,) -> CompositeVideoClip:
   """Merge the video with image 
   Image: takes the duration from the videos (video/ cta)
   Video: set height x width based on the frame dimensions (image/ length)
+  Auto_crop: 
 
-  TODO: implement cta, vscale, custom frame dimension
+  TODO: implement cta, custom frame dimension
   """
   # set vars
   container_size = image.w
@@ -58,9 +59,17 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip, cta=False, vscale=1)
   container = ColorClip(size=(container_size, container_size), 
                         color=(255,255,255)).set_duration(full_duration)
   
-  v_height = container_size - image.h
-  video = video.resize(height=v_height)
-  video = video.set_position(("center","top"))
+  # set video
+  if not auto_crop:
+    # safe scale of video
+    v_height = container_size - image.h
+    video = video.resize(height=v_height)
+    video = video.set_position(("center", "top"))
+  else:
+    # full free space allocation (crop if necessary)
+    video = video.resize(width=container_size)
+    overlap = image.h + video.h - container_size
+    video = video.set_position(("center",-overlap))
 
   # set image
   image = image.set_duration(full_duration)
