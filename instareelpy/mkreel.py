@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
   output = args.output
   if not output:
-    print("no output file specified, previewing ..")
+    print("InstaReelPy - no output file specified, previewing ..")
 
     # fixing an audio related bug
     aud = myclip.audio.set_fps(44100)
@@ -128,4 +128,4 @@ if __name__ == "__main__":
   else:
     # export reel
     myclip.write_videofile(output)
-    print(f"Finished generating reel, file: {output}")
+    print(f"InstaReelPy - Finished generating reel, file: {output}")
