@@ -28,7 +28,7 @@ def init_argparse():
   parser.add_argument('--img', metavar="IMAGE", nargs=1,
                       help="path to source image file",
                       required=True,)
-  parser.add_argument('--vcut', action="append",
+  parser.add_argument('--vcut', action="append", dest="vcuts",
                       nargs=2, metavar="t", required=True,
                       help="""start and end times for the video cut
                         (use multiple times for multiple cuts)""")
@@ -104,8 +104,36 @@ def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
     else:
       return vtemp.set_position(("center", "top"))
 
-# Debug
-parser = init_argparse()
-args = parser.parse_args()
-print(args)
+if __name__ == "__main__":
+  parser = init_argparse()
+  args = parser.parse_args()
+
+  if DEBUG:
+    print(args)
+
+  vidfile = VideoFileClip(args.video)
+  cuts_times = args.vcuts
+  vcuts = concat_vcuts(vidfile, cuts_times)
+
+  myimg = ImageClip(*args.img)
+
+  myclip = merge_vimg(image=myimg, video=vcuts, auto_crop=args.auto_crop)
+
+
+  output = args.output[0]
+  if not output:
+    print("no output file specified, previewing ..")
+
+    # fixing an audio related bug
+    aud = myclip.audio.set_fps(44100)
+    myclip = myclip.without_audio().set_audio(aud)
+    
+    myclip.resize(0.3).preview(fps=5, audio=True)
+  else:
+    # export reel
+    myclip.write_videofile(output)
+    print(f"Finished generating reel, file: {output}")
+
+  pass
+
 # Export
