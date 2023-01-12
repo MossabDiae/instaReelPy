@@ -60,23 +60,53 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip, auto_crop: bool, cta
                         color=(255,255,255)).set_duration(full_duration)
   
   # set video
-  if not auto_crop:
-    # safe scale of video
-    v_height = container_size - image.h
-    video = video.resize(height=v_height)
-    video = video.set_position(("center", "top"))
-  else:
-    # full free space allocation (crop if necessary)
-    video = video.resize(width=container_size)
-    overlap = image.h + video.h - container_size
-    video = video.set_position(("center",-overlap))
+  # if not auto_crop:
+  #   # safe scale of video
+  #   v_height = container_size - image.h
+  #   video = video.resize(height=v_height)
+  #   video = video.set_position(("center", "top"))
+  # else:
+  #   # full free space allocation (crop if necessary)
+  #   video = video.resize(width=container_size)
+  #   overlap = image.h + video.h - container_size
+  #   video = video.set_position(("center",-overlap))
+
+  # left space for video
+  vspace = (container_size - image.h, container_size)
+  video = adjust_video(video=video, container=vspace, auto_crop=True)
 
   # set image
   image = image.set_duration(full_duration)
   image = image.set_position(("center", "bottom"))
   
 
-  return CompositeVideoClip([container, image, video])
+  return CompositeVideoClip([container, video, image])
+
+def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
+  """Adjust video to fit into a container space
+  use auto_crop to force fixing aspect ratio
+  """
+  ch, cw = container
+  # try to adjust by height (as it's safer)
+  vtemp = video.resize(height=ch)
+  # if vwidth < container and no crop -> done
+  # elif vwidth > container and crop -> done
+  if ((vtemp.w <= cw and not auto_crop) or 
+      (vtemp.w >= cw and auto_crop)):
+    return vtemp.set_position(("center", "top"))
+
+
+  # elif vwidth < container and crop -> adjust by width
+  # elif vwidh > container and no crop -> adjust by width
+  elif ((vtemp.w <= cw and auto_crop) or 
+        (vtemp.w >= cw and not auto_crop)):
+    vtemp = video.resize(width=cw)
+    if auto_crop:
+      # move video up to see subtitles
+      overlap = ch - vtemp.h
+      return vtemp.set_position(("center",overlap))
+    else:
+      return vtemp.set_position(("center", "top"))
 
 # Debug
 parser = init_argparse()
