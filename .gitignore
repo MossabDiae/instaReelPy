@@ -1,5 +1,6 @@
 # Manually added by Moss
 *.mp4
+.vscode/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
