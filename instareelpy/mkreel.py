@@ -25,7 +25,7 @@ def init_argparse():
 
   parser.add_argument('video', metavar="VIDEO",
                       help="path to source video file")
-  parser.add_argument('--img', metavar="IMAGE", nargs=1,
+  parser.add_argument('--img', metavar="IMAGE", nargs="?",
                       help="path to source image file",
                       required=True,)
   parser.add_argument('--vcut', action="append", dest="vcuts",
@@ -35,7 +35,7 @@ def init_argparse():
   parser.add_argument('--auto-crop', default=False, action='store_true',
                       help="crop cuts to fit all available space next to image")
   parser.add_argument('-o', '--output', default=False,
-                      metavar="OUTPUT", nargs=1,
+                      metavar="OUTPUT", nargs="?",
                       help="path to output file, omit to show preview instead")
   
   return parser
@@ -115,12 +115,12 @@ if __name__ == "__main__":
   cuts_times = args.vcuts
   vcuts = concat_vcuts(vidfile, cuts_times)
 
-  myimg = ImageClip(*args.img)
+  myimg = ImageClip(args.img)
 
   myclip = merge_vimg(image=myimg, video=vcuts, auto_crop=args.auto_crop)
 
 
-  output = args.output[0]
+  output = args.output
   if not output:
     print("no output file specified, previewing ..")
 
