@@ -12,11 +12,6 @@ import argparse
 # container_size = (1080, 1080)
 DEBUG = True
 
-# Collect data from user (video file, image, times)
-# TODO: Set argparse
-
-# video, times
-# image
 def init_argparse():
   parser = argparse.ArgumentParser(
     prog="mkreel.py",
@@ -41,7 +36,6 @@ def init_argparse():
   return parser
 
 
-# Generate a video-cuts from sub-clips array
 def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
   """Create cuts form the video and concatenate them
   TODO: implement transition animation
@@ -50,7 +44,7 @@ def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
   merged_v = mpy.concatenate(vcuts)
   return merged_v
 
-# Put things together
+
 def merge_vimg(image: ImageClip, video: CompositeVideoClip, 
                auto_crop: bool, cta=False,) -> CompositeVideoClip:
   """Merge the video with image 
@@ -69,7 +63,7 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip,
                         color=(255,255,255)).set_duration(full_duration)
   
   # set video
-  # left space for video
+  # space left for video
   vspace = (container_size - image.h, container_size)
   video = adjust_video(video=video, container=vspace, auto_crop=auto_crop)
 
@@ -79,6 +73,7 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip,
   
 
   return CompositeVideoClip([container, video, image])
+
 
 def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
   """Adjust video to fit into a container space
@@ -98,11 +93,12 @@ def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
     # if not, adjust by width
     vtemp = video.resize(width=cw)
     if auto_crop:
-      # move video up to see subtitles
+      # move video up to see subtitles if found
       overlap = ch - vtemp.h
       return vtemp.set_position(("center",overlap))
     else:
       return vtemp.set_position(("center", "top"))
+
 
 if __name__ == "__main__":
   parser = init_argparse()
@@ -133,7 +129,3 @@ if __name__ == "__main__":
     # export reel
     myclip.write_videofile(output)
     print(f"Finished generating reel, file: {output}")
-
-  pass
-
-# Export
