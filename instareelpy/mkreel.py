@@ -7,7 +7,9 @@ import argparse
 
 
 # Setting vars
-container_size = (1080, 1080)
+# current container size is determined by image width
+# TODO: set custom container size
+# container_size = (1080, 1080)
 DEBUG = True
 
 # Collect data from user (video file, image, times)
@@ -22,29 +24,35 @@ def init_argparse():
   )
 
   parser.add_argument('video', metavar="VIDEO",
-                      help="path to video file to make cuts from")
+                      help="path to source video file")
   parser.add_argument('--img', metavar="IMAGE", nargs=1,
-                      help="path to image file",
+                      help="path to source image file",
                       required=True,)
   parser.add_argument('--vcut', action="append",
                       nargs=2, metavar="t", required=True,
-                      help="start and end times for the video cut (can be multiple)")
-  parser.add_argument('--auto-crop', default=False, action='store_true',)
+                      help="""start and end times for the video cut
+                        (use multiple times for multiple cuts)""")
+  parser.add_argument('--auto-crop', default=False, action='store_true',
+                      help="crop cuts to fit all available space next to image")
+  parser.add_argument('-o', '--output', default=False,
+                      metavar="OUTPUT", nargs=1,
+                      help="path to output file, omit to show preview instead")
   
   return parser
 
 
 # Generate a video-cuts from sub-clips array
-# merge_subclips(video, [(t1, t2), (), ...]) -> vcuts made from sclips array + animation
 def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
   """Create cuts form the video and concatenate them
+  TODO: implement transition animation
   """
   vcuts = [video.subclip(*cut) for cut in cuts]
   merged_v = mpy.concatenate(vcuts)
   return merged_v
 
 # Put things together
-def merge_vimg(image: ImageClip, video: CompositeVideoClip, auto_crop: bool, cta=False,) -> CompositeVideoClip:
+def merge_vimg(image: ImageClip, video: CompositeVideoClip, 
+               auto_crop: bool, cta=False,) -> CompositeVideoClip:
   """Merge the video with image 
   Image: takes the duration from the videos (video/ cta)
   Video: set height x width based on the frame dimensions (image/ length)
