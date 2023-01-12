@@ -29,6 +29,7 @@ def init_argparse():
   parser.add_argument('--vcut', action="append",
                       nargs=2, metavar="t", required=True,
                       help="start and end times for the video cut (can be multiple)")
+  parser.add_argument('--auto-crop', default=False, action='store_true',)
   
   return parser
 
@@ -47,7 +48,7 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip, auto_crop: bool, cta
   """Merge the video with image 
   Image: takes the duration from the videos (video/ cta)
   Video: set height x width based on the frame dimensions (image/ length)
-  Auto_crop: 
+  Auto_crop: fit video into available space
 
   TODO: implement cta, custom frame dimension
   """
@@ -60,20 +61,9 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip, auto_crop: bool, cta
                         color=(255,255,255)).set_duration(full_duration)
   
   # set video
-  # if not auto_crop:
-  #   # safe scale of video
-  #   v_height = container_size - image.h
-  #   video = video.resize(height=v_height)
-  #   video = video.set_position(("center", "top"))
-  # else:
-  #   # full free space allocation (crop if necessary)
-  #   video = video.resize(width=container_size)
-  #   overlap = image.h + video.h - container_size
-  #   video = video.set_position(("center",-overlap))
-
   # left space for video
   vspace = (container_size - image.h, container_size)
-  video = adjust_video(video=video, container=vspace, auto_crop=True)
+  video = adjust_video(video=video, container=vspace, auto_crop=auto_crop)
 
   # set image
   image = image.set_duration(full_duration)
@@ -87,19 +77,17 @@ def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
   use auto_crop to force fixing aspect ratio
   """
   ch, cw = container
-  # try to adjust by height (as it's safer)
+  # try to adjust by height
   vtemp = video.resize(height=ch)
-  # if vwidth < container and no crop -> done
-  # elif vwidth > container and crop -> done
+
+  # if result matches requirements
   if ((vtemp.w <= cw and not auto_crop) or 
       (vtemp.w >= cw and auto_crop)):
     return vtemp.set_position(("center", "top"))
 
-
-  # elif vwidth < container and crop -> adjust by width
-  # elif vwidh > container and no crop -> adjust by width
   elif ((vtemp.w <= cw and auto_crop) or 
         (vtemp.w >= cw and not auto_crop)):
+    # if not, adjust by width
     vtemp = video.resize(width=cw)
     if auto_crop:
       # move video up to see subtitles
