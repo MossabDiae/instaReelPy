@@ -40,7 +40,16 @@ def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
   """Create cuts form the video and concatenate them
   TODO: implement transition animation
   """
-  vcuts = [video.subclip(*cut) for cut in cuts]
+  # set transition speed
+  transpd = 0.2
+  # Create the transition clip using a color clip
+  pre_vcuts = [video.subclip(*cut) for cut in cuts]
+  vcuts = [
+    pre_vcuts[0].crossfadeout(transpd),
+    *[v.crossfadein(transpd).crossfadeout(transpd) for v in pre_vcuts[1:-1]],
+    pre_vcuts[-1].crossfadein(transpd)
+  ]
+  print(f'len of vcuts {len(vcuts)}')
   merged_v = mpy.concatenate(vcuts)
   return merged_v
 
