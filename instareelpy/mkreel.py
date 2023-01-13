@@ -29,6 +29,8 @@ def init_argparse():
                         (use multiple times for multiple cuts)""")
   parser.add_argument('--auto-crop', default=False, action='store_true',
                       help="crop cuts to fit all available space next to image")
+  parser.add_argument('-d','--disable-transition', default=False, action="store_true",
+                      help='disable transition when merging multiple video cuts')
   parser.add_argument('-o', '--output', default=False,
                       metavar="OUTPUT", nargs="?",
                       help="path to output file, omit to show preview instead")
@@ -36,20 +38,24 @@ def init_argparse():
   return parser
 
 
-def concat_vcuts(video: VideoFileClip, cuts: List[list]) -> CompositeVideoClip:
+def concat_vcuts(video: VideoFileClip, cuts: List[list], transition: bool) -> CompositeVideoClip:
   """Create cuts form the video and concatenate them
   TODO: implement transition animation
   """
   # set transition speed
   transpd = 0.2
-  # Create the transition clip using a color clip
+
   pre_vcuts = [video.subclip(*cut) for cut in cuts]
-  vcuts = [
-    pre_vcuts[0].crossfadeout(transpd),
-    *[v.crossfadein(transpd).crossfadeout(transpd) for v in pre_vcuts[1:-1]],
-    pre_vcuts[-1].crossfadein(transpd)
-  ]
-  print(f'len of vcuts {len(vcuts)}')
+  
+  if transition:
+    vcuts = [
+      pre_vcuts[0].crossfadeout(transpd),
+      *[v.crossfadein(transpd).crossfadeout(transpd) for v in pre_vcuts[1:-1]],
+      pre_vcuts[-1].crossfadein(transpd)
+    ]
+  else:
+    vcuts = pre_vcuts
+  
   merged_v = mpy.concatenate(vcuts)
   return merged_v
 
@@ -118,7 +124,9 @@ if __name__ == "__main__":
 
   vidfile = VideoFileClip(args.video)
   cuts_times = args.vcuts
-  vcuts = concat_vcuts(vidfile, cuts_times)
+  enable_transition = not args.disable_transition
+
+  vcuts = concat_vcuts(vidfile, cuts_times, transition=enable_transition)
 
   myimg = ImageClip(args.img)
 
