@@ -40,6 +40,10 @@ python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time 
 python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time　--vcut start_time2 end_time2 -o output_reel.mp4
 ```
 
+* when making multiple cuts a simple fade transition is inserted between them by default, you can disable this behavior by passing `--disable-transition`
+```
+python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time　--vcut start_time2 end_time2 --disable-transition -o output_reel.mp4
+```
 
 * show help
 ```
