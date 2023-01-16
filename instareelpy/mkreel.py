@@ -47,7 +47,7 @@ def concat_vcuts(video: VideoFileClip, cuts: List[list], transition: bool) -> Co
 
   pre_vcuts = [video.subclip(*cut) for cut in cuts]
   
-  if transition:
+  if transition and len(pre_vcuts) > 1:
     vcuts = [
       pre_vcuts[0].crossfadeout(transpd),
       *[v.crossfadein(transpd).crossfadeout(transpd) for v in pre_vcuts[1:-1]],
