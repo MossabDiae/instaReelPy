@@ -4,19 +4,23 @@ Generate Instagram reels from image frames and video cuts.
 ![](instareelpy_cover.png)
 
 ## Install
-```bash
+``` bash
 git clone https://github.com/MossabDiae/instaReelPy.git
-cd instaReelPy/instareelpy/
+cd instaReelPy/
 
-# install dependencies
-pip install -r requirements.txt 
+pip install .
+```
+
+You can also use the script `mkreel.py` without pip install, just make sure to install dependencies:
+```bash
+pip install -r instareelpy/requirements.txt 
 ```
 
 ## Usage
 
 * basic usage (preview only)
 ```
-python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time 
+mkreel input_video.mp4 --img input_img.png --vcut start_time end_time 
 ```
 
 * time format:
@@ -27,25 +31,25 @@ python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time
 
 * output to a file: `-o`
 ```
-python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time -o output_reel.mp4
+mkreel input_video.mp4 --img input_img.png --vcut start_time end_time -o output_reel.mp4
 ```
 
 * use `--auto-crop` to crop video so that it fits in available space
 ```
-python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time --auto-crop　-o output_reel.mp4
+mkreel input_video.mp4 --img input_img.png --vcut start_time end_time --auto-crop　-o output_reel.mp4
 ```
 
 * use `--vcut` multiple times to make and concatenate multiple cuts from same input video
 ```
-python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time　--vcut start_time2 end_time2 -o output_reel.mp4
+mkreel input_video.mp4 --img input_img.png --vcut start_time end_time　--vcut start_time2 end_time2 -o output_reel.mp4
 ```
 
 * when making multiple cuts a simple fade transition is inserted between them by default, you can disable this behavior by passing `--disable-transition`
 ```
-python mkreel.py input_video.mp4 --img input_img.png --vcut start_time end_time　--vcut start_time2 end_time2 --disable-transition -o output_reel.mp4
+mkreel input_video.mp4 --img input_img.png --vcut start_time end_time　--vcut start_time2 end_time2 --disable-transition -o output_reel.mp4
 ```
 
 * show help
 ```
-python mkreel.py -h
+mkreel -h
 ```
