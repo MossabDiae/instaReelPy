@@ -11,7 +11,6 @@ from pathlib import Path
 # current container size is determined by image width
 # TODO: set custom container size
 # container_size = (1080, 1080)
-DEBUG = True
 
 def init_argparse():
   parser = argparse.ArgumentParser(
@@ -30,6 +29,8 @@ def init_argparse():
                         (use multiple times for multiple cuts)""")
   parser.add_argument('--auto-crop', default=False, action='store_true',
                       help="crop cuts to fit all available space next to image")
+  parser.add_argument('--debug', default=False, action='store_true',
+                      help="Enable debug")
   parser.add_argument('-d','--disable-transition', default=False, action="store_true",
                       help='disable transition when merging multiple video cuts')
   parser.add_argument('-o', '--output', default=False,
@@ -120,7 +121,11 @@ def main():
   parser = init_argparse()
   args = parser.parse_args()
 
+  DEBUG = args.debug
+
   if DEBUG:
+    print("=== Running in debug mode ===")
+    print("printing arg: ")
     print(args)
 
   # Loading assets
