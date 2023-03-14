@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instareelpy"
+version = "0.3.0"
+dependencies = [
+  "Pillow == 9.3.0",
+  "moviepy == 1.0.3",
+
+  # pygame is used for live previews, you can omit it
+  # and rely on output (-o) to see results
+  "pygame == 2.1.2",
+]
+
+[project.scripts]
+mkreel = "instareelpy.mkreel:main"

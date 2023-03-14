@@ -114,8 +114,9 @@ def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
     else:
       return vtemp.set_position(("center", "top"))
 
-
-if __name__ == "__main__":
+# a main function will help in creating an entry to the
+# script
+def main():
   parser = init_argparse()
   args = parser.parse_args()
 
@@ -146,3 +147,7 @@ if __name__ == "__main__":
     # export reel
     myclip.write_videofile(output)
     print(f"InstaReelPy - Finished generating reel, file: {output}")
+
+# This is when you're calling python -m mkreel
+if __name__ == "__main__":
+  main()
