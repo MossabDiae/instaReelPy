@@ -4,6 +4,7 @@ from moviepy.video.VideoClip import ImageClip, ColorClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from typing import List
 import argparse
+from pathlib import Path
 
 
 # Setting vars
@@ -40,7 +41,6 @@ def init_argparse():
 
 def concat_vcuts(video: VideoFileClip, cuts: List[list], transition: bool) -> CompositeVideoClip:
   """Create cuts form the video and concatenate them
-  TODO: implement transition animation
   """
   # set transition speed
   transpd = 0.2
@@ -123,13 +123,19 @@ def main():
   if DEBUG:
     print(args)
 
-  vidfile = VideoFileClip(args.video)
+  # Loading assets
+  try:
+    vidfile = VideoFileClip(str(Path(args.video).absolute()))
+    myimg = ImageClip(str(Path(args.img).absolute()))
+  except:
+    print("Error loading video/ image, make sure filenames are correct.")
+    raise SystemExit(1)
+  
   cuts_times = args.vcuts
   enable_transition = not args.disable_transition
 
   vcuts = concat_vcuts(vidfile, cuts_times, transition=enable_transition)
 
-  myimg = ImageClip(args.img)
 
   myclip = merge_vimg(image=myimg, video=vcuts, auto_crop=args.auto_crop)
 
