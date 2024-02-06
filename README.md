@@ -39,6 +39,12 @@ mkreel input_video.mp4 --img input_img.png --vcut start_time end_time -o output_
 mkreel input_video.mp4 --img input_img.png --vcut start_time end_time --auto-crop　-o output_reel.mp4
 ```
 
+* use `--ratio` to set aspect ratio (default: 4:5) for e.g use the following command to get a square video:
+```
+mkreel input_video.mp4 --img input_img.png --vcut start_time end_time --ratio 1:1 --auto-crop　-o output_reel.mp4
+```
+note: the video width will be determined from the image file.
+
 * use `--vcut` multiple times to make and concatenate multiple cuts from same input video
 ```
 mkreel input_video.mp4 --img input_img.png --vcut start_time end_time　--vcut start_time2 end_time2 -o output_reel.mp4
