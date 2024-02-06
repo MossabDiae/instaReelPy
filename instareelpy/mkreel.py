@@ -62,25 +62,32 @@ def concat_vcuts(video: VideoFileClip, cuts: List[list], transition: bool) -> Co
 
 
 def merge_vimg(image: ImageClip, video: CompositeVideoClip, 
-               auto_crop: bool, cta=False,) -> CompositeVideoClip:
+               auto_crop: bool, cta=False, aspect_ratio: tuple=(1,1)) -> CompositeVideoClip:
   """Merge the video with image 
   Image: takes the duration from the videos (video/ cta)
   Video: set height x width based on the frame dimensions (image/ length)
   Auto_crop: fit video into available space
+  aspect ratio: e.g: 4:5 => (4, 5), square by default
+    note: width is determined by passed image width
 
-  TODO: implement cta, custom frame dimension
+  TODO: implement cta
   """
   # set vars
-  container_size = image.w
+  container_w = image.w
+  container_h = round(container_w * aspect_ratio[1] / aspect_ratio[0])
+  
+  # if DEBUG:
+  print(f"Using aspect ratio {aspect_ratio} => {container_w} x {container_h}")
+
   full_duration = video.duration
 
   # set container
-  container = ColorClip(size=(container_size, container_size), 
+  container = ColorClip(size=(container_w, container_h), 
                         color=(255,255,255)).set_duration(full_duration)
   
   # set video
   # space left for video
-  vspace = (container_size - image.h, container_size)
+  vspace = (container_w, container_h - image.h)
   video = adjust_video(video=video, container=vspace, auto_crop=auto_crop)
 
   # set image
@@ -95,7 +102,7 @@ def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
   """Adjust video to fit into a container space
   use auto_crop to force fixing aspect ratio
   """
-  ch, cw = container
+  cw, ch  = container
   # try to adjust by height
   vtemp = video.resize(height=ch)
 
