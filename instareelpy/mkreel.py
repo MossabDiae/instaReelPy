@@ -166,7 +166,7 @@ def main():
   vcuts = concat_vcuts(vidfile, cuts_times, transition=enable_transition)
 
 
-  myclip = merge_vimg(image=myimg, video=vcuts, auto_crop=args.auto_crop, aspect_ratio=aspect_ratio)
+  myclip = merge_vimg(image=myimg, video=vcuts, auto_crop=args.auto_crop, aspect_ratio=aspect_ratio, debug=DEBUG)
 
 
   output = args.output
