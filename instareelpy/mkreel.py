@@ -14,27 +14,29 @@ from pathlib import Path
 
 def init_argparse():
   parser = argparse.ArgumentParser(
-    prog="mkreel.py",
+    prog="mkreel",
     description="Generate Instagram reels using an image and cuts from a video",   
   )
 
   parser.add_argument('video', metavar="VIDEO",
                       help="path to source video file")
-  parser.add_argument('--img', metavar="IMAGE", nargs="?",
-                      help="path to source image file",
+  parser.add_argument('--img', metavar="IMAGE",
+                      help="path to image file",
                       required=True,)
   parser.add_argument('--vcut', action="append", dest="vcuts",
                       nargs=2, metavar="t", required=True,
                       help="""start and end times for the video cut
-                        (use multiple times for multiple cuts)""")
+                        (use multiple times for multiple cuts) e.g: 01:05, 00:01:05, 00:01.05.9""")
+  parser.add_argument('-r', '--ratio', metavar="ASPECT-RATIO",default="4:5",
+                      help="aspect ratio to use, e.g: 1:1, 4:5 ")
   parser.add_argument('--auto-crop', default=False, action='store_true',
-                      help="crop cuts to fit all available space next to image")
+                      help="crop video to fit all available space")
   parser.add_argument('--debug', default=False, action='store_true',
                       help="Enable debug")
   parser.add_argument('-d','--disable-transition', default=False, action="store_true",
                       help='disable transition when merging multiple video cuts')
   parser.add_argument('-o', '--output', default=False,
-                      metavar="OUTPUT", nargs="?",
+                      metavar="OUTPUT",
                       help="path to output file, omit to show preview instead")
   
   return parser
@@ -62,12 +64,13 @@ def concat_vcuts(video: VideoFileClip, cuts: List[list], transition: bool) -> Co
 
 
 def merge_vimg(image: ImageClip, video: CompositeVideoClip, 
-               auto_crop: bool, cta=False, aspect_ratio: tuple=(1,1)) -> CompositeVideoClip:
+               auto_crop: bool, cta=False, aspect_ratio: tuple=(4,5),
+               debug=True) -> CompositeVideoClip:
   """Merge the video with image 
   Image: takes the duration from the videos (video/ cta)
   Video: set height x width based on the frame dimensions (image/ length)
   Auto_crop: fit video into available space
-  aspect ratio: e.g: 4:5 => (4, 5), square by default
+  aspect ratio: e.g: 4:5 => (4, 5), 4:5 by default
     note: width is determined by passed image width
 
   TODO: implement cta
@@ -76,8 +79,8 @@ def merge_vimg(image: ImageClip, video: CompositeVideoClip,
   container_w = image.w
   container_h = round(container_w * aspect_ratio[1] / aspect_ratio[0])
   
-  # if DEBUG:
-  print(f"Using aspect ratio {aspect_ratio} => {container_w} x {container_h}")
+  if debug:
+    print(f"Using aspect ratio {aspect_ratio} => {container_w} x {container_h}")
 
   full_duration = video.duration
 
@@ -122,6 +125,13 @@ def adjust_video(video: CompositeVideoClip, container: tuple, auto_crop=False):
     else:
       return vtemp.set_position(("center", "top"))
 
+def get_aspect(ratio: str):
+  """\"1:1\" => (1, 1)
+  """ 
+  ratio_tup = tuple([int(i) for i in ratio.split(":")])
+  assert len(ratio_tup) == 2, "Wrong ratio format"
+  return ratio_tup
+
 # a main function will help in creating an entry to the
 # script
 def main():
@@ -134,6 +144,13 @@ def main():
     print("=== Running in debug mode ===")
     print("printing arg: ")
     print(args)
+
+  # checking aspect ratio
+  try:
+    aspect_ratio = get_aspect(args.ratio)
+  except:
+    print("Error processing aspect ratio, make sure to pass a valid one. e.g: 1:1")
+    raise SystemExit(1)
 
   # Loading assets
   try:
@@ -149,7 +166,7 @@ def main():
   vcuts = concat_vcuts(vidfile, cuts_times, transition=enable_transition)
 
 
-  myclip = merge_vimg(image=myimg, video=vcuts, auto_crop=args.auto_crop)
+  myclip = merge_vimg(image=myimg, video=vcuts, auto_crop=args.auto_crop, aspect_ratio=aspect_ratio)
 
 
   output = args.output
